@@ -1,0 +1,6 @@
+@TechForge.API_HostAddress = http://localhost:5131
+
+GET {{TechForge.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
