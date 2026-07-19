@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TechForge.Application.Interfaces.Persistance;
 using TechForge.Infrastructure.Data.Context;
+using TechForge.Infrastructure.Repositories;
 
 namespace TechForge.Infrastructure.Extensions;
 
@@ -16,6 +18,8 @@ public static class DependencyInjection
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"));
         });
+
+        services.AddScoped<IProductRepository, ProductRepositories>();
 
         return services;
     }
