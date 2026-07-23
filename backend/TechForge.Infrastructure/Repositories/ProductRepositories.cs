@@ -68,6 +68,11 @@ namespace TechForge.Infrastructure.Repositories
                 .FirstOrDefaultAsync(p => p.SKU == sku);
         }
 
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
         public Task UpdateAsync(Product product)
         {
             _context.Products.Update(product);

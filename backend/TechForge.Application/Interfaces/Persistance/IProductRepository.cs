@@ -17,5 +17,6 @@ namespace TechForge.Application.Interfaces.Persistance
         Task DeleteAsync(Product product);
         Task<bool> ExistsAsync(int id);
         Task<bool> ExistsBySkuAsync(string sku);
+        Task SaveChangesAsync();
     }
 }
