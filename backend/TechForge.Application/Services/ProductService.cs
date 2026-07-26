@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,28 @@ namespace TechForge.Application.Services
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
 
-        public ProductService(IProductRepository productRepository, IMapper mapper)
+        private readonly IValidator<CreateProductDto> _createValidator;
+        private readonly IValidator<UpdateProductDto> _updateValidator;
+
+        public ProductService(IProductRepository productRepository, IMapper mapper, IValidator<CreateProductDto> createValidator, IValidator<UpdateProductDto> updateValidator)
         {
             _productRepository = productRepository; 
             _mapper = mapper;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
+
         }
 
         public async Task<int> CreateAsync(CreateProductDto dto)
         {
+
+            var validationResult = await _createValidator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid) 
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
+
             if(await _productRepository.ExistsBySkuAsync(dto.SKU))
             {
                 throw new InvalidOperationException("SKU already exists!");
@@ -67,6 +82,13 @@ namespace TechForge.Application.Services
 
         public async Task UpdateAsync(int id, UpdateProductDto dto)
         {
+            var validationResult = await _updateValidator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
+
             var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null) { throw new KeyNotFoundException("Product not found!"); }
