@@ -24,7 +24,7 @@ namespace TechForge.API.Controllers
             return Ok(products);
         }
 
-        [HttpGet("{id: int}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<ProductDto>> GetById(int id)
         {
             var product = await _productService.GetProductByIdAsync(id);
@@ -45,7 +45,7 @@ namespace TechForge.API.Controllers
                 null);
         }
 
-        [HttpPut("{id: int}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto dto)
         {
             await _productService.UpdateAsync(id, dto);
@@ -53,7 +53,7 @@ namespace TechForge.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id: int}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             await _productService.DeleteAsync(id);
