@@ -1,5 +1,6 @@
-using TechForge.Infrastructure.Extensions;
+using TechForge.API.Extensions;
 using TechForge.Application;
+using TechForge.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseGlobalExceptionHandling();
 
 app.UseHttpsRedirection();
 
