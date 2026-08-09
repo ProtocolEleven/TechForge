@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechForge.Application.Common.Models;
 using TechForge.Application.DTOs;
 using TechForge.Application.Interfaces.Persistance;
 using TechForge.Application.Services.Interfaces;
@@ -64,11 +65,19 @@ namespace TechForge.Application.Services
 
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllAsync()
+        public async Task<PagedResult<ProductDto>> GetProductsAsync(ProductQueryParameters parameters)
         {
-            var products = await _productRepository.GetAllAsync();
+            var (products, totalCount) = await _productRepository.GetProductsAsync(parameters);
 
-            return _mapper.Map<IEnumerable<ProductDto>>(products);
+            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+            return new PagedResult<ProductDto>
+            {
+                Items = productDtos,
+                PageNumber = parameters.PageNumber,
+                PageSize = parameters.PageSize,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<ProductDto?> GetProductByIdAsync(int id)

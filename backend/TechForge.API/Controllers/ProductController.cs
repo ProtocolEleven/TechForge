@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TechForge.Application.Common.Models;
 using TechForge.Application.DTOs;
 using TechForge.Application.Services.Interfaces;
 
@@ -17,9 +18,9 @@ namespace TechForge.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts([FromQuery] ProductQueryParameters parameters)
         {
-            var products = await _productService.GetAllAsync();
+            var products = await _productService.GetProductsAsync(parameters);
 
             return Ok(products);
         }

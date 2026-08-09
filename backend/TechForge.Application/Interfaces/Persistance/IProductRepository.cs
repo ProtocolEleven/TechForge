@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechForge.Application.Common.Models;
 using TechForge.Domain.Entities;
 
 namespace TechForge.Application.Interfaces.Persistance
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAllAsync();
+        Task<(IEnumerable<Product> Products, int TotalCount)> GetProductsAsync(ProductQueryParameters parameters);
         Task<Product?> GetByIdAsync(int id);
         Task<Product?> GetBySkuAsync(string sku);
         Task AddAsync(Product product);
