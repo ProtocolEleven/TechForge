@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TechForge.Application.Common.Models;
 using TechForge.Application.Interfaces.Persistance;
 using TechForge.Domain.Entities;
 using TechForge.Infrastructure.Data.Context;
@@ -66,6 +67,23 @@ namespace TechForge.Infrastructure.Repositories
         {
             return await _context.Products
                 .FirstOrDefaultAsync(p => p.SKU == sku);
+        }
+
+        public async Task<(IEnumerable<Product> Products, int TotalCount)> GetProductsAsync(ProductQueryParameters parameters)
+        {
+            IQueryable<Product> query = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand);
+
+            var totalCount = await query.CountAsync();
+
+            var products = await query
+                .OrderBy(p => p.Id)
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync();
+
+            return (products, totalCount);
         }
 
         public async Task SaveChangesAsync()
