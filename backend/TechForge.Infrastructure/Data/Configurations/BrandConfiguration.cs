@@ -30,6 +30,12 @@ namespace TechForge.Infrastructure.Data.Configurations
             builder.Property(x => x.IsActive)
                     .HasDefaultValue(true);
 
+            builder.Property(x => x.CreatedAt)
+                    .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            builder.Property(x => x.UpdatedAt)
+                   .IsRequired(false);
+
             builder.HasMany(x => x.Products)
                     .WithOne(x => x.Brand)
                     .HasForeignKey(x => x.BrandId)
