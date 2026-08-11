@@ -75,6 +75,16 @@ namespace TechForge.Infrastructure.Repositories
                 .Include(p => p.Category)
                 .Include(p => p.Brand);
 
+            if (!string.IsNullOrWhiteSpace(parameters.Search))
+            {
+                var search = parameters.Search.Trim();
+
+                query = query.Where(x =>
+                    x.Name.Contains(search) ||
+                    x.SKU.Contains(search) ||
+                    (x.Description != null && x.Description.Contains(search)));
+            }
+
             var totalCount = await query.CountAsync();
 
             var products = await query
