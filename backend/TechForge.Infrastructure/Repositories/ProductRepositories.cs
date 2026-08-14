@@ -85,6 +85,18 @@ namespace TechForge.Infrastructure.Repositories
                     (x.Description != null && x.Description.Contains(search)));
             }
 
+            if (parameters.CategoryId.HasValue)
+            {
+                query = query.Where(
+                    x => x.CategoryId == parameters.CategoryId.Value);
+            }
+
+            if (parameters.BrandId.HasValue)
+            {
+                query = query.Where(
+                    x => x.BrandId == parameters.BrandId.Value);
+            }
+
             var totalCount = await query.CountAsync();
 
             var products = await query
