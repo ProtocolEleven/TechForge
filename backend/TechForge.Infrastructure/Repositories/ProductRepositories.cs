@@ -69,6 +69,30 @@ namespace TechForge.Infrastructure.Repositories
                 .FirstOrDefaultAsync(p => p.SKU == sku);
         }
 
+        private static IQueryable<Product> ApplySorting(IQueryable<Product> query, ProductQueryParameters parameters)
+        {
+            var sortBy = parameters.SortBy?.Trim().ToLower();
+
+            var descending = parameters.SortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
+
+            return sortBy switch
+            {
+                "name" => descending
+                    ? query.OrderByDescending(x => x.Name)
+                    : query.OrderBy(x => x.Name),
+
+                "price" => descending
+                    ? query.OrderByDescending(x => x.Price)
+                    : query.OrderBy(x => x.Price),
+
+                "createdat" => descending
+                    ? query.OrderByDescending(x => x.CreatedAt)
+                    : query.OrderBy(x => x.CreatedAt),
+
+                _ => query.OrderBy(x => x.Id)
+            };
+        }
+
         public async Task<(IEnumerable<Product> Products, int TotalCount)> GetProductsAsync(ProductQueryParameters parameters)
         {
             IQueryable<Product> query = _context.Products
@@ -99,8 +123,9 @@ namespace TechForge.Infrastructure.Repositories
 
             var totalCount = await query.CountAsync();
 
+            query = ApplySorting(query, parameters);
+
             var products = await query
-                .OrderBy(p => p.Id)
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
                 .ToListAsync();
