@@ -16,8 +16,8 @@ namespace TechForge.Domain.Entities
         public int StockQuantity { get; set; }
         public bool IsActive { get; set; } = true;
         public int CategoryId { get; set; }
-        public Category Category { get; set; } = null;
+        public Category Category { get; set; } = null!;
         public int BrandId { get; set; }
-        public Brand Brand { get; set; } = null;
+        public Brand Brand { get; set; } = null!;
     }
 }
