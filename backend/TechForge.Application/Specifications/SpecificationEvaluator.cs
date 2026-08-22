@@ -8,6 +8,8 @@ public static class SpecificationEvaluator
     public static IQueryable<T> GetQuery<T>(
         IQueryable<T> inputQuery,
         ISpecification<T> specification,
+        bool applyIncludes = true,
+        bool applySorting = true,
         bool applyPaging = true)
         where T : class
     {
@@ -18,18 +20,24 @@ public static class SpecificationEvaluator
             query = query.Where(criteria);
         }
 
-        query = specification.Includes.Aggregate(
-            query,
-            (current, include) => current.Include(include));
-
-        if (specification.OrderBy is not null)
+        if (applyIncludes)
         {
-            query = query.OrderBy(specification.OrderBy);
+            query = specification.Includes.Aggregate(
+                query,
+                (current, include) => current.Include(include));
         }
-        else if (specification.OrderByDescending is not null)
+
+        if (applySorting)
         {
-            query = query.OrderByDescending(
-                specification.OrderByDescending);
+            if (specification.OrderBy is not null)
+            {
+                query = query.OrderBy(specification.OrderBy);
+            }
+            else if (specification.OrderByDescending is not null)
+            {
+                query = query.OrderByDescending(
+                    specification.OrderByDescending);
+            }
         }
 
         if (applyPaging && specification.IsPagingEnabled)
