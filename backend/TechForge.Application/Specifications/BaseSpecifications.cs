@@ -9,76 +9,50 @@ namespace TechForge.Application.Specifications
 {
     public abstract class BaseSpecification<T> : ISpecification<T>
     {
-        protected BaseSpecification()
+        public List<Expression<Func<T, bool>>> Criteria { get; } = [];
+
+        public List<Expression<Func<T, object>>> Includes { get; } = [];
+
+        public Expression<Func<T, object>>? OrderBy { get; private set; }
+
+        public Expression<Func<T, object>>? OrderByDescending { get; private set; }
+
+        public int Skip { get; private set; }
+
+        public int Take { get; private set; }
+
+        public bool IsPagingEnabled { get; private set; }
+
+        protected void AddCriteria(
+            Expression<Func<T, bool>> criteria)
         {
+            Criteria.Add(criteria);
         }
 
-        protected BaseSpecification(Expression<Func<T, bool>> criteria)
-        {
-            Criteria = criteria;
-        }
-
-        public Expression<Func<T, bool>>? Criteria
-        {
-            get;
-        }
-
-        public List<Expression<Func<T, object>>> Includes
-        {
-            get;
-        } = [];
-
-        public Expression<Func<T, object>>? OrderBy
-        {
-            private set;
-            get;
-        }
-
-        public Expression<Func<T, object>>? OrderByDescending
-        {
-            private set;
-            get;
-        }
-
-        public int Skip
-        {
-            private set;
-            get;
-        }
-
-        public int Take
-        {
-            private set;
-            get;
-        }
-
-        public bool IsPagingEnabled
-        {
-            private set;
-            get;
-        }
-
-        protected void AddInclude(Expression<Func<T, object>> include)
+        protected void AddInclude(
+            Expression<Func<T, object>> include)
         {
             Includes.Add(include);
         }
 
-        protected void AddOrderBy(Expression<Func<T, object>> orderBy)
+        protected void AddOrderBy(
+            Expression<Func<T, object>> orderBy)
         {
             OrderBy = orderBy;
         }
 
-        protected void AddOrderByDescending(Expression<Func<T, object>> orderByDescending)
+        protected void AddOrderByDescending(
+            Expression<Func<T, object>> orderByDescending)
         {
             OrderByDescending = orderByDescending;
         }
 
-        protected void ApplyPaging(int skip, int take)
+        protected void ApplyPaging(
+            int skip,
+            int take)
         {
             Skip = skip;
-
             Take = take;
-
             IsPagingEnabled = true;
         }
     }

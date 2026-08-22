@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using TechForge.Application.Common.Models;
 using TechForge.Application.Interfaces.Persistance;
+using TechForge.Application.Specifications.Products;
 using TechForge.Domain.Entities;
 using TechForge.Infrastructure.Data.Context;
+using TechForge.Infrastructure.Specifications;
 
 namespace TechForge.Infrastructure.Repositories
 {
@@ -69,66 +71,22 @@ namespace TechForge.Infrastructure.Repositories
                 .FirstOrDefaultAsync(p => p.SKU == sku);
         }
 
-        private static IQueryable<Product> ApplySorting(IQueryable<Product> query, ProductQueryParameters parameters)
+        public async Task<(IEnumerable<Product> Products, int TotalCount)>GetProductsAsync(ProductQueryParameters parameters)
         {
-            var sortBy = parameters.SortBy?.Trim().ToLower();
+            var specification = new ProductSpecification(parameters);
 
-            var descending = parameters.SortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
+            var countQuery = SpecificationEvaluator.GetQuery(
+                _context.Products.AsQueryable(),
+                specification,
+                applyPaging: false);
 
-            return sortBy switch
-            {
-                "name" => descending
-                    ? query.OrderByDescending(x => x.Name)
-                    : query.OrderBy(x => x.Name),
+            var totalCount = await countQuery.CountAsync();
 
-                "price" => descending
-                    ? query.OrderByDescending(x => x.Price)
-                    : query.OrderBy(x => x.Price),
+            var productsQuery = SpecificationEvaluator.GetQuery(
+                _context.Products.AsQueryable(),
+                specification);
 
-                "createdat" => descending
-                    ? query.OrderByDescending(x => x.CreatedAt)
-                    : query.OrderBy(x => x.CreatedAt),
-
-                _ => query.OrderBy(x => x.Id)
-            };
-        }
-
-        public async Task<(IEnumerable<Product> Products, int TotalCount)> GetProductsAsync(ProductQueryParameters parameters)
-        {
-            IQueryable<Product> query = _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Brand);
-
-            if (!string.IsNullOrWhiteSpace(parameters.Search))
-            {
-                var search = parameters.Search.Trim();
-
-                query = query.Where(x =>
-                    x.Name.Contains(search) ||
-                    x.SKU.Contains(search) ||
-                    (x.Description != null && x.Description.Contains(search)));
-            }
-
-            if (parameters.CategoryId.HasValue)
-            {
-                query = query.Where(
-                    x => x.CategoryId == parameters.CategoryId.Value);
-            }
-
-            if (parameters.BrandId.HasValue)
-            {
-                query = query.Where(
-                    x => x.BrandId == parameters.BrandId.Value);
-            }
-
-            var totalCount = await query.CountAsync();
-
-            query = ApplySorting(query, parameters);
-
-            var products = await query
-                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-                .Take(parameters.PageSize)
-                .ToListAsync();
+            var products = await productsQuery.ToListAsync();
 
             return (products, totalCount);
         }
