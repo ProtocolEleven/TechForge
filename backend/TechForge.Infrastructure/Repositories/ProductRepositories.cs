@@ -78,6 +78,8 @@ namespace TechForge.Infrastructure.Repositories
             var countQuery = SpecificationEvaluator.GetQuery(
                 _context.Products.AsQueryable(),
                 specification,
+                applyIncludes: false,
+                applySorting: false,
                 applyPaging: false);
 
             var totalCount = await countQuery.CountAsync();
