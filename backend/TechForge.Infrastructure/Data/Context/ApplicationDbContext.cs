@@ -15,9 +15,10 @@ namespace TechForge.Infrastructure.Data.Context
 
         }
 
-        public DbSet<Category> Categories => Set<Category>();
-        public DbSet<Brand> Brands => Set<Brand>();
-        public DbSet<Product> Products => Set<Product>();
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<User> Users {  get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

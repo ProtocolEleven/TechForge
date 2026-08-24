@@ -5,13 +5,7 @@ namespace TechForge.Infrastructure.Specifications;
 
 public static class SpecificationEvaluator
 {
-    public static IQueryable<T> GetQuery<T>(
-        IQueryable<T> inputQuery,
-        ISpecification<T> specification,
-        bool applyIncludes = true,
-        bool applySorting = true,
-        bool applyPaging = true)
-        where T : class
+    public static IQueryable<T> GetQuery<T>(IQueryable<T> inputQuery, ISpecification<T> specification, bool applyIncludes = true, bool applySorting = true, bool applyPaging = true) where T : class
     {
         IQueryable<T> query = inputQuery;
 
