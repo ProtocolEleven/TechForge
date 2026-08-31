@@ -8,6 +8,7 @@ using TechForge.Infrastructure;
 using TechForge.Infrastructure.Extensions;
 using TechForge.Infrastructure.Repositories;
 using TechForge.Infrastructure.Services;
+using TechForge.Application.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,10 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();

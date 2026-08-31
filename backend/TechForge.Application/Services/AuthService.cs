@@ -13,12 +13,48 @@ namespace TechForge.Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly ITokenService _tokenService;
 
-        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher)
+        public AuthService(IUserRepository userRepository, IPasswordHasher passwordHasher, ITokenService tokenService)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _tokenService = tokenService;
         }
+
+        public async Task<AuthResponse> LoginAsync(LoginRequest request)
+        {
+            var email = request.Email.Trim().ToLowerInvariant();
+
+            var user = await _userRepository.GetByEmailAsync(email);
+
+            if (user == null) 
+            {
+                throw new UnauthorizedAccessException("Invalid Email or Password!");
+            }
+
+            var passwordIsInvalid = _passwordHasher.VerifyPassword(
+                request.Password,
+                user.PasswordHash);
+
+            if (!passwordIsInvalid) 
+            {
+                throw new UnauthorizedAccessException("Invalid Email or Password!");
+            }
+
+            var token = _tokenService.CreateToken(user);
+
+            return new AuthResponse
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role,
+                Token = token
+            };
+        }
+
         public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
         {
             var existingUser = await _userRepository.GetByEmailAsync(request.Email);
@@ -36,6 +72,8 @@ namespace TechForge.Application.Services
                 PasswordHash = _passwordHasher.HashPassword(request.Password)
             };
 
+            var token = _tokenService.CreateToken(user);
+
             await _userRepository.AddAsync(user);
 
             await _userRepository.SaveChangesAsync();
@@ -46,7 +84,8 @@ namespace TechForge.Application.Services
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
-                Role = user.Role
+                Role = user.Role,
+                Token = token
             };
         }
     }
