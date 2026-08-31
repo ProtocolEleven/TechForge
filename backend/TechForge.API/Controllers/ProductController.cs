@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TechForge.Application.Common.Models;
 using TechForge.Application.DTOs;
 using TechForge.Application.Services.Interfaces;
+using TechForge.Domain.Constants;
 
 namespace TechForge.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -36,6 +39,7 @@ namespace TechForge.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult> CreateProduct(CreateProductDto dto)
         {
             var id = await _productService.CreateAsync(dto);
@@ -47,6 +51,7 @@ namespace TechForge.API.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto dto)
         {
             await _productService.UpdateAsync(id, dto);
@@ -55,6 +60,7 @@ namespace TechForge.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             await _productService.DeleteAsync(id);
