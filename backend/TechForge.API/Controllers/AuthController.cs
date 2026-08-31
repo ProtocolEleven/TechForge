@@ -24,5 +24,13 @@ namespace TechForge.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("login")]
+        public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
+        {
+            var result = await _authService.LoginAsync(request);
+
+            return Ok(result);
+        }
+
     }
 }
