@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TechForge.Application.DTOs.Auth;
 using TechForge.Application.Interfaces;
 using TechForge.Domain.Entities;
+using TechForge.Application.Exceptions;
 
 namespace TechForge.Application.Services
 {
@@ -61,7 +62,7 @@ namespace TechForge.Application.Services
 
             if (existingUser != null) 
             {
-                throw new InvalidOperationException("A user with this email already exists.");
+                throw new ConflictException("A user with this email already exists.");
             }
 
             var user = new User
