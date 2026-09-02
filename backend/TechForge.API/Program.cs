@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TechForge.Application.Settings;
 using Microsoft.OpenApi.Models;
+using TechForge.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -125,6 +126,8 @@ if (app.Environment.IsDevelopment())
 app.UseGlobalExceptionHandling();
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 
