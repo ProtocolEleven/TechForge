@@ -12,9 +12,11 @@ using TechForge.Application.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using TechForge.Application.Settings;
 using Microsoft.OpenApi.Models;
 using TechForge.API.Middleware;
+using FluentValidation;
+using TechForge.Application.Validators.Auth;
+using TechForge.Application.DTOs.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +42,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
+
+builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
 
 builder.Services
     .AddAuthentication(options =>
@@ -122,8 +128,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseGlobalExceptionHandling();
 
 app.UseHttpsRedirection();
 
