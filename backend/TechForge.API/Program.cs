@@ -119,6 +119,15 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddApplication();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -132,6 +141,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseCors("AllowAngularApp");
 
 app.UseAuthentication();
 
